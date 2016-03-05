@@ -74,6 +74,7 @@ var requestAnimationFrame = window.requestAnimationFrame ||
 
 var time;
 var dt;
+var smallDt;
 var animate = true;
 function Circle(radius, startingAngle, endingAngle, arcAnimationIncreament){
     this.radius = radius;
@@ -83,8 +84,7 @@ function Circle(radius, startingAngle, endingAngle, arcAnimationIncreament){
 }
 
 Circle.prototype.updateClockwise = function(){
-   
-    var endingAngleIncreaments = this.startingAngle+this.arcAnimationIncreament;     
+    var endingAngleIncreaments = this.startingAngle+this.arcAnimationIncreament; 
     ctx.beginPath();
     ctx.arc(centerX,centerY,this.radius,this.startingAngle,endingAngleIncreaments);
     ctx.lineWidth = 3;
@@ -92,14 +92,14 @@ Circle.prototype.updateClockwise = function(){
     ctx.stroke();
     ctx.closePath();
     this.arcAnimationIncreament += (dt/1000)*Math.PI;
+    console.log(this.arcAnimationIncreament);
     console.log("test1");
-    if(endingAngleIncreaments>this.endingAngle){
+     if(endingAngleIncreaments>this.endingAngle){
         animate=false;
     }
 }
 
 Circle.prototype.updateAntiClockwise = function(){
-
     var startingAngleDicrements = this.endingAngle-this.arcAnimationIncreament;
     ctx.beginPath();
     ctx.arc(centerX,centerY,this.radius,startingAngleDicrements,this.endingAngle);
@@ -115,9 +115,9 @@ Circle.prototype.updateAntiClockwise = function(){
 }
 
 function setupCircles(){
-    for(var i=10; i<canvasDiagonalFromCenter; i+=10){
+    for(var radius=canvasDiagonalFromCenter; radius>0; radius-=10){
         
-        var circle = new Circle(i,0,2*Math.PI,0);
+        var circle = new Circle(radius,0.5*Math.PI,2.5*Math.PI,0);
         circles.push(circle);
     }
     drawAndUpdateCircles();
@@ -125,23 +125,26 @@ function setupCircles(){
 
 setupCircles();
 
-
+var bigDt=0;
 function drawAndUpdateCircles(){
     var now = new Date().getTime();
     dt = now - (time || now);
     time = now;
+    bigDt+=dt;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     
-    for(var i=0; i<circles.length; i++){
-
-        
+    for(var i=0; i<circles.length-1; i++){
         var myCircle = circles[i];
-        if (i%2 != 0){
-            myCircle.updateClockwise();
-        }
-        else{
-            myCircle.updateAntiClockwise();
-        }
+   //     console.log(myCircle);
+        myCircle.updateClockwise();
+        console.log("boooo");
+        console.log(myCircle.arcAnimationIncreament);
+        var temp = myCircle.arcAnimationIncreament
+        console.log(temp);
+      var  myCircle2 = circles[i+1];
+        myCircle2.arcAnimationIncreament = temp;
+        console.log(myCircle2);
+         myCircle.updateClockwise();
     }
     if(animate==true){
     requestAnimationFrame(drawAndUpdateCircles);
