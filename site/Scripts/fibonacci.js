@@ -76,24 +76,24 @@ var time;
 var dt;
 //var smallDt;
 var animate = true;
-function Circle(radius, startingAngle, endingAngle, arcAnimationIncreament, positiveDelay, negativeDelay,endingAngleIncrement, startingAngleDecrement){
+var speed = 0.013*Math.PI;
+var delayIncrements = 10;
+function Circle(radius, startingAngle, endingAngle, positiveIncrement, negativeIncrement, delay){
     this.radius = radius;
     this.startingAngle = startingAngle;
     this.endingAngle = endingAngle;
-    this.arcAnimationIncreament = arcAnimationIncreament;
-    this.positiveDelay = positiveDelay;
-    this.negativeDelay = negativeDelay;
-    this.endingAngleIncrement = endingAngleIncrement;
-    this.startingAngleDecrement = startingAngleDecrement;
+    this.positiveIncrement = this.startingAngle+speed;
+    this.negativeIncrement = this.endingAngle-speed;
+    this.delay = delay;
 }
 
 Circle.prototype.updateClockwise = function(){
-    if(this.positiveDelay > 0){
-        this.positiveDelay-=1000
+//    if(this.positiveDelay > 0){
+ //       this.positiveDelay-=1000
   //      console.log("do i ever come here??");
 //        console.log(this);
-    }
-    else{
+//    }
+//    else{
         this.endingAngleIncrement = this.startingAngle+this.arcAnimationIncreament; 
         ctx.beginPath();
         ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.endingAngleIncrement);
@@ -104,14 +104,16 @@ Circle.prototype.updateClockwise = function(){
   //      console.log("test1");
 
  //       console.log(this.arcAnimationIncreament);
-        this.arcAnimationIncreament += 0.03*Math.PI;
+        this.arcAnimationIncreament += 0.003*Math.PI;
  //       console.log("test1");
         if(this.endingAngleIncrement>this.endingAngle){
-         //   animate=false;
-         //   this.arcAnimationIncreament = 0;
+     //       animate=false;
+            
+            this.arcAnimationIncreament = 0;
+            this.startingAngleDecrement=0;
             this.updateAntiClockwise();
         }
-    }
+//    }
    
  //       console.log(this);
         
@@ -119,12 +121,13 @@ Circle.prototype.updateClockwise = function(){
 }
 
 Circle.prototype.updateAntiClockwise = function(){
-    if(this.negativeDelay < 0){
-        this.negativeDelay+=1000
+ //   if(this.negativeDelay < 0){
+ //       this.negativeDelay+=1000
    //     console.log("do i ever come here??");
     //    console.log(this);
-    }
-    else{
+ //   }
+ //   else{
+    console.log("test1");
         this.startingAngleDecrement = this.endingAngle-this.arcAnimationIncreament;
         ctx.beginPath();
         ctx.arc(centerX,centerY,this.radius,this.startingAngleDecrement,this.endingAngle);
@@ -132,30 +135,65 @@ Circle.prototype.updateAntiClockwise = function(){
         ctx.strokeStyle = 'green';
         ctx.stroke();
         ctx.closePath();
-        this.arcAnimationIncreament += 0.03*Math.PI;
+        this.arcAnimationIncreament += 0.003*Math.PI;
    //     console.log("test2");
-        if(this.startingAngleDecrement<this.startingAngle){
-        //    animate=false;
+        console.log(this.startingAngleDecrement);
+        console.log(this.startingAngle);
+        if(this.startingAngleDecrement>this.startingAngle){
+            console.log("booooooobooooooo");
+   //         animate=false;
             this.arcAnimationIncreament = 0;
+            this.endingAngleIncrement=0;
             this.updateClockwise();
         }
+ //   }
+}
+
+Circle.prototype.updateCircle = function(){
+    if(this.positiveIncrement>this.endingAngle){
+        ctx.beginPath();
+        ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.negativeIncrement);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.closePath();
+        this.negativeIncrement -= speed;
+        if(this.negativeIncrement<this.startingAngle){
+            this.positiveIncrement=this.startingAngle;
+            this.negativeIncrement=this.endingAngle;
+        }
+    }
+    else{
+        ctx.beginPath();
+        ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.positiveIncrement);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'black';
+        ctx.stroke();
+        ctx.closePath();
+        this.positiveIncrement += speed;
+     //   if(this.positiveIncrement>this.startingAngle){
+    //        this.negativeIncrement=0;
+      //  }
     }
 }
 
+
 function setupCircles(){
-    var positiveDelay = 0;
-    var negativeDelay = 0;
+ //   var positiveDelay = 1;
+//    var negativeDelay = 0;
  //   time = now;
+    var delay=0;
+    
     for(var radius=centerX; radius>0; radius-=10){
-        positiveDelay+=1000;
-        negativeDelay-=1000;
-        var circle = new Circle(radius,0.5*Math.PI,2.5*Math.PI,0,positiveDelay,negativeDelay,0,0);
+        var circle = new Circle(radius,0.5*Math.PI,2.5*Math.PI,0,0,delay);
         circles.push(circle);
+        delay+=delayIncrements;
     }
     
     console.log(circles[0]);
     console.log(circles[1]);
     console.log(circles[2]);
+    console.log(circles[3]);
     console.log(circles[4]);
     
     drawAndUpdateCircles();
@@ -169,12 +207,16 @@ function drawAndUpdateCircles(){
     dt = (now - (time || now));
     time = now;
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    var negativeDelay = 0;
-
+         
+  //  myCircle.updateAntiClockwise();
     for(var i=0; i<circles.length; i++){
-        var myCircle = circles[i];
-        myCircle.updateAntiClockwise();  
+        myCircle = circles[i];
+        if(myCircle.delay==0)
+            myCircle.updateCircle();    
+        else
+            myCircle.delay-=1;
     }
+    
     
     //May need this
 /*    var positiveDelay = 0;
