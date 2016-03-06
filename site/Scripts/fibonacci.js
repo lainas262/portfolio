@@ -1,4 +1,4 @@
-/* function fibonacci() {
+ function fibonacci() {
     var a = 1;
     console.log(a);
     var b = 1;
@@ -33,7 +33,7 @@
     }
 }
 
-*/
+
 function fibonacci2() {
     var a = 1;
     var b = 1;
@@ -55,7 +55,7 @@ var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var centerX = canvas.width / 2;
 var centerY = canvas.height / 2;
-var arcAnimationIncreament = 0.01*Math.PI;
+//var arcAnimationIncreament = 0.01*Math.PI;
 var finalEndingAngle = 0;
 var finalStartingAngle = 0;
 //var startingAngle = 0*Math.PI;
@@ -64,8 +64,8 @@ var finalStartingAngle = 0;
 //var startingAngleDicrements = 0;
 //var carriedArcSize = 0;
 var canvasDiagonalFromCenter = Math.sqrt((Math.pow(centerX,2)+Math.pow(centerY,2)));
-console.log(canvasDiagonalFromCenter);
-console.log("ha");
+//console.log(canvasDiagonalFromCenter);
+//console.log("ha");
 var requestAnimationFrame = window.requestAnimationFrame || 
                             window.mozRequestAnimationFrame || 
                             window.webkitRequestAnimationFrame || 
@@ -74,78 +74,119 @@ var requestAnimationFrame = window.requestAnimationFrame ||
 
 var time;
 var dt;
-var smallDt;
+//var smallDt;
 var animate = true;
-function Circle(radius, startingAngle, endingAngle, arcAnimationIncreament){
+function Circle(radius, startingAngle, endingAngle, arcAnimationIncreament, positiveDelay, negativeDelay,endingAngleIncrement, startingAngleDecrement){
     this.radius = radius;
     this.startingAngle = startingAngle;
     this.endingAngle = endingAngle;
     this.arcAnimationIncreament = arcAnimationIncreament;
+    this.positiveDelay = positiveDelay;
+    this.negativeDelay = negativeDelay;
+    this.endingAngleIncrement = endingAngleIncrement;
+    this.startingAngleDecrement = startingAngleDecrement;
 }
 
 Circle.prototype.updateClockwise = function(){
-    var endingAngleIncreaments = this.startingAngle+this.arcAnimationIncreament; 
-    ctx.beginPath();
-    ctx.arc(centerX,centerY,this.radius,this.startingAngle,endingAngleIncreaments);
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = 'red';
-    ctx.stroke();
-    ctx.closePath();
-    this.arcAnimationIncreament += (dt/1000)*Math.PI;
-    console.log(this.arcAnimationIncreament);
-    console.log("test1");
-     if(endingAngleIncreaments>this.endingAngle){
-        animate=false;
+    if(this.positiveDelay > 0){
+        this.positiveDelay-=1000
+  //      console.log("do i ever come here??");
+//        console.log(this);
     }
+    else{
+        this.endingAngleIncrement = this.startingAngle+this.arcAnimationIncreament; 
+        ctx.beginPath();
+        ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.endingAngleIncrement);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'red';
+        ctx.stroke();
+        ctx.closePath();
+  //      console.log("test1");
+
+ //       console.log(this.arcAnimationIncreament);
+        this.arcAnimationIncreament += 0.03*Math.PI;
+ //       console.log("test1");
+        if(this.endingAngleIncrement>this.endingAngle){
+         //   animate=false;
+         //   this.arcAnimationIncreament = 0;
+            this.updateAntiClockwise();
+        }
+    }
+   
+ //       console.log(this);
+        
+    
 }
 
 Circle.prototype.updateAntiClockwise = function(){
-    var startingAngleDicrements = this.endingAngle-this.arcAnimationIncreament;
-    ctx.beginPath();
-    ctx.arc(centerX,centerY,this.radius,startingAngleDicrements,this.endingAngle);
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = 'green';
-    ctx.stroke();
-    ctx.closePath();
-    this.arcAnimationIncreament += (dt/1000)*Math.PI;
-    console.log("test2");
-    if(startingAngleDicrements<this.startingAngle){
-        animate=false;
+    if(this.negativeDelay < 0){
+        this.negativeDelay+=1000
+   //     console.log("do i ever come here??");
+    //    console.log(this);
+    }
+    else{
+        this.startingAngleDecrement = this.endingAngle-this.arcAnimationIncreament;
+        ctx.beginPath();
+        ctx.arc(centerX,centerY,this.radius,this.startingAngleDecrement,this.endingAngle);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'green';
+        ctx.stroke();
+        ctx.closePath();
+        this.arcAnimationIncreament += 0.03*Math.PI;
+   //     console.log("test2");
+        if(this.startingAngleDecrement<this.startingAngle){
+        //    animate=false;
+            this.arcAnimationIncreament = 0;
+            this.updateClockwise();
+        }
     }
 }
 
 function setupCircles(){
-    for(var radius=canvasDiagonalFromCenter; radius>0; radius-=10){
-        
-        var circle = new Circle(radius,0.5*Math.PI,2.5*Math.PI,0);
+    var positiveDelay = 0;
+    var negativeDelay = 0;
+ //   time = now;
+    for(var radius=centerX; radius>0; radius-=10){
+        positiveDelay+=1000;
+        negativeDelay-=1000;
+        var circle = new Circle(radius,0.5*Math.PI,2.5*Math.PI,0,positiveDelay,negativeDelay,0,0);
         circles.push(circle);
     }
+    
+    console.log(circles[0]);
+    console.log(circles[1]);
+    console.log(circles[2]);
+    console.log(circles[4]);
+    
     drawAndUpdateCircles();
 }
 
 setupCircles();
+fibonacci();
 
-var bigDt=0;
 function drawAndUpdateCircles(){
     var now = new Date().getTime();
-    dt = now - (time || now);
+    dt = (now - (time || now));
     time = now;
-    bigDt+=dt;
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    
-    for(var i=0; i<circles.length-1; i++){
+    var negativeDelay = 0;
+
+    for(var i=0; i<circles.length; i++){
         var myCircle = circles[i];
-   //     console.log(myCircle);
-        myCircle.updateClockwise();
-        console.log("boooo");
-        console.log(myCircle.arcAnimationIncreament);
-        var temp = myCircle.arcAnimationIncreament
-        console.log(temp);
-      var  myCircle2 = circles[i+1];
-        myCircle2.arcAnimationIncreament = temp;
-        console.log(myCircle2);
-         myCircle.updateClockwise();
+        myCircle.updateAntiClockwise();  
     }
+    
+    //May need this
+/*    var positiveDelay = 0;
+    var negativeDelay = 0;
+    for(var i=0; i<circles.length; i++){
+        positiveDelay+=1000;
+        negativeDelay-=1000;
+        myCircle.positiveDelay = positiveDelay;
+        myCircle.negativeDelay = negativeDelay;
+    }
+*/
+    
     if(animate==true){
     requestAnimationFrame(drawAndUpdateCircles);
     }
@@ -164,7 +205,7 @@ function drawAndUpdateCircles(){
 
 
 
-
+// trial Methods below not being used
 
 function drawClockwiseCircle(){
     var now = new Date().getTime(),
@@ -227,13 +268,5 @@ function drawCounterClockwiseCircle(){
     }
 }
 
-
-//drawClockwiseCircle();
-//drawCounterClockwiseCircle();
-
-//fibonacci();
-//drawSpiral(2);
-//drawSpiral(4);
-//drawSpiral(6);
 
 
