@@ -49,7 +49,7 @@ Circle.prototype.animateClockwiseCircle = function(){
         ctx.beginPath();
         ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.negativeIncrement);
         ctx.lineWidth = 3;
-        ctx.strokeStyle = 'black';
+        ctx.strokeStyle = 'pink';
         ctx.stroke();
         ctx.closePath();
         this.negativeIncrement -= speed;
@@ -62,7 +62,7 @@ Circle.prototype.animateClockwiseCircle = function(){
         ctx.beginPath();
         ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.positiveIncrement);
         ctx.lineWidth = 3;
-        ctx.strokeStyle = 'black';
+        ctx.strokeStyle = 'pink';
         ctx.stroke();
         ctx.closePath();
         this.positiveIncrement += speed;
