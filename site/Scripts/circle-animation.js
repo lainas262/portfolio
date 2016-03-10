@@ -34,12 +34,12 @@ var inputSpeed = 0.003*Math.PI;
 //speed in this case is essentially the angle to increment each circle at each frame drawn
 //var speed = inputSpeed;
 //acceleration input;
-var inputAcceleration = 0.005*Math.PI;
+var inputAcceleration = 0.01*Math.PI;
 //decelerationPoint is the angle size from the end of a circle to start decelerating the speed when drawing clockwise
 //the value will also be used to calculate when to start decelerating when drawing the circle counter clockwise
-var decelerationPoint = 0.5*Math.PI;
+var decelerationPoint = 1*Math.PI;
 //delayIncreaments controls when inner circles are drawn
-var delayIncrements = 0;
+var delayIncrements = 10;
 //Circle objects constructor
 function Circle(radius, startingAngle, endingAngle, positiveIncrement, negativeIncrement, delay, speed, acceleration){
     this.radius = radius;
@@ -58,7 +58,7 @@ Circle.prototype.animateClockwiseCircle = function(){
     if(this.positiveIncrement>this.endingAngle){
         ctx.beginPath();
         ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.negativeIncrement);
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 3;
         ctx.strokeStyle = 'pink';
         ctx.stroke();
         ctx.closePath();
@@ -89,7 +89,7 @@ Circle.prototype.animateClockwiseCircle = function(){
     else{
         ctx.beginPath();
         ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.positiveIncrement);
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 2;
         ctx.strokeStyle = 'pink';
         ctx.stroke();
         ctx.closePath();
@@ -128,7 +128,7 @@ function setupCircles(){
         var circle = new Circle(radius, 0.5*Math.PI + i , 2.5*Math.PI + i ,0,0,delay,inputSpeed,inputAcceleration);
         circles.push(circle);
         delay+=delayIncrements;
-        i+= 0*Math.PI;
+        i+= 0.3*Math.PI;
     }
     drawAndUpdateCircles();
 }
