@@ -29,43 +29,89 @@ var requestAnimationFrame = window.requestAnimationFrame ||
                             window.mozRequestAnimationFrame || 
                             window.webkitRequestAnimationFrame || 
                             window.msRequestAnimationFrame;
+//speed input
+var inputSpeed = 0.003*Math.PI;
 //speed in this case is essentially the angle to increment each circle at each frame drawn
-var speed = 0.013*Math.PI;
+//var speed = inputSpeed;
+//acceleration input;
+var inputAcceleration = 0.005*Math.PI;
+//decelerationPoint is the angle size from the end of a circle to start decelerating the speed when drawing clockwise
+//the value will also be used to calculate when to start decelerating when drawing the circle counter clockwise
+var decelerationPoint = 0.5*Math.PI;
 //delayIncreaments controls when inner circles are drawn
-var delayIncrements = 10;
+var delayIncrements = 0;
 //Circle objects constructor
-function Circle(radius, startingAngle, endingAngle, positiveIncrement, negativeIncrement, delay){
+function Circle(radius, startingAngle, endingAngle, positiveIncrement, negativeIncrement, delay, speed, acceleration){
     this.radius = radius;
     this.startingAngle = startingAngle;
     this.endingAngle = endingAngle;
     this.positiveIncrement = this.startingAngle+speed;
     this.negativeIncrement = this.endingAngle-speed;
     this.delay = delay;
+    this.speed = speed;
+    this.acceleration = acceleration;
 }
 //Circle Animation logic. Start drawing circle clockwise increasing the size by "speed".
 //If the drawing increment has reached the end, start drawing the circle by subtracting "speed" from drawing increment. 
 Circle.prototype.animateClockwiseCircle = function(){
+
     if(this.positiveIncrement>this.endingAngle){
         ctx.beginPath();
         ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.negativeIncrement);
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2;
         ctx.strokeStyle = 'pink';
         ctx.stroke();
         ctx.closePath();
-        this.negativeIncrement -= speed;
-        if(this.negativeIncrement<this.startingAngle){
-            this.positiveIncrement=this.startingAngle;
-            this.negativeIncrement=this.endingAngle;
+        if(this.negativeIncrement< this.startingAngle+decelerationPoint){
+            //decelerate counter clockwise
+            this.acceleration=(0-this.speed)/(this.endingAngle-decelerationPoint);
+            this.negativeIncrement -= this.speed;
+            this.speed += this.speed * this.acceleration;
+            
+            
+            if(this.negativeIncrement<this.startingAngle){
+                
+                this.speed = inputSpeed;
+                this.acceleration = inputAcceleration;
+                this.positiveIncrement=this.startingAngle+this.speed;
+                this.negativeIncrement=this.endingAngle-this.speed;
+            }
+            
+        }
+        else{
+            //accelerate counter clockwise
+            this.negativeIncrement -= this.speed;
+            this.speed += this.speed * this.acceleration;
+            
+            
         }
     }
     else{
         ctx.beginPath();
         ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.positiveIncrement);
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 1;
         ctx.strokeStyle = 'pink';
         ctx.stroke();
         ctx.closePath();
-        this.positiveIncrement += speed;
+        
+        if(this.positiveIncrement > this.endingAngle-decelerationPoint){
+            //decelerate clockwise
+            this.acceleration=(0-this.speed)/(this.endingAngle-decelerationPoint);
+            this.positiveIncrement += this.speed;
+            this.speed += this.speed * this.acceleration;
+            
+            if(this.positiveIncrement>this.endingAngle){
+                this.speed = inputSpeed;
+                this.acceleration = inputAcceleration;
+            }
+            
+        }
+        else{
+            //accelerate clockwise
+            this.positiveIncrement += this.speed;
+            this.speed += this.speed*this.acceleration;
+            
+        }
     }
 }
 //Fill circles array with as many circles as possible given the centerX
@@ -77,10 +123,12 @@ Circle.prototype.animateClockwiseCircle = function(){
 function setupCircles(){
 
     var delay=0;
-    for(var radius=centerX; radius>0; radius-=10){
-        var circle = new Circle(radius,0.5*Math.PI,2.5*Math.PI,0,0,delay);
+    var i = 0;
+    for(var radius=canvasDiagonalFromCenter; radius>0; radius-=10){
+        var circle = new Circle(radius, 0.5*Math.PI + i , 2.5*Math.PI + i ,0,0,delay,inputSpeed,inputAcceleration);
         circles.push(circle);
         delay+=delayIncrements;
+        i+= 0*Math.PI;
     }
     drawAndUpdateCircles();
 }
@@ -92,7 +140,7 @@ function setupCircles(){
 function drawAndUpdateCircles(){
     //clear canvas at each frame
     ctx.clearRect(0,0,canvas.width,canvas.height);
-
+    
     for(var i=0; i<circles.length; i++){
         if(circles[i].delay==0)
             circles[i].animateClockwiseCircle();    
