@@ -34,10 +34,10 @@ var inputSpeed = 0.003*Math.PI;  //can be set with limits?? or not?
 //speed in this case is essentially the angle to increment each circle at each frame drawn
 //var speed = inputSpeed;
 //acceleration input;
-var inputAcceleration = 0.0085*Math.PI; //can be set with limits
+var inputAcceleration = 0.007*Math.PI; //can be set with limits
 //decelerationPoint is the angle size from the end of a circle to start decelerating the speed when drawing clockwise
 //the value will also be used to calculate when to start decelerating when drawing the circle counter clockwise
-var decelerationPoint =0.1*Math.PI;//must be   0.9pi>x>0.1pi otherwise it will accelerates untill it completes Counter clockwise motion too
+var decelerationPoint =1*Math.PI;//must be   0pi>x>1pi otherwise it will accelerates untill it completes Counter clockwise motion too .. must be half size of drawing arc
 //delayIncreaments controls when inner circles are drawn
 var delayIncrements = 0;
 //Circle objects constructor
@@ -58,7 +58,7 @@ Circle.prototype.animateClockwiseCircle = function(){
     if(this.positiveIncrement>this.endingAngle){
         ctx.beginPath();
         ctx.arc(centerX,centerY,this.radius,this.startingAngle,this.negativeIncrement);
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 3;
         ctx.strokeStyle = 'pink';
         ctx.stroke();
         ctx.closePath();
@@ -124,7 +124,7 @@ function setupCircles(){
         var circle = new Circle(radius, 0*Math.PI + i , 2*Math.PI + i ,0,0,delay,inputSpeed,inputAcceleration);
         circles.push(circle);
         delay+=delayIncrements;
-      //  i+= 0.3*Math.PI;
+  //      i+= 0.3*Math.PI;
     }
     drawAndUpdateCircles();
 }
@@ -149,6 +149,143 @@ function drawAndUpdateCircles(){
 setupCircles();
 //function call to the fibonacci function defined below
 fibonacci();
+
+
+$(function($) {
+    $(".acceleration").knob({
+        change : function (value) {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            value = value/10000;
+            inputAcceleration = value * Math.PI;
+            circles = [];
+            setupCircles();
+        //    console.log("change : " + value);
+        //    console.log("Input Acceleration:" +inputAcceleration);
+        },
+        release : function (value) {
+            //console.log(this.$.attr('value'));
+            console.log("release : " + value);
+        },
+        cancel : function () {
+            console.log("cancel : ", this);
+        },
+        /*format : function (value) {
+            return value + '%';
+        },*/
+        draw : function () {
+
+        // "tron" case
+            if(this.$.data('skin') == 'tron') {
+
+                this.cursorExt = 0.3;
+
+                var a = this.arc(this.cv)  // Arc
+                , pa                   // Previous arc
+                , r = 1;
+
+                this.g.lineWidth = this.lineWidth;
+
+                if (this.o.displayPrevious) {
+                    pa = this.arc(this.v);
+                    this.g.beginPath();
+                    this.g.strokeStyle = this.pColor;
+                    this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, pa.s, pa.e, pa.d);
+                    this.g.stroke();
+                }
+
+                this.g.beginPath();
+                this.g.strokeStyle = r ? this.o.fgColor : this.fgColor ;
+                this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, a.s, a.e, a.d);
+                this.g.stroke();
+
+                this.g.lineWidth = 2;
+                this.g.beginPath();
+                this.g.strokeStyle = this.o.fgColor;
+                this.g.arc( this.xy, this.xy, this.radius - this.lineWidth + 1 + this.lineWidth * 2 / 3, 0, 2 * Math.PI, false);
+                this.g.stroke();
+
+                return false;
+            }
+                
+        }
+        
+    });
+    
+});
+
+$(function($) {
+    $(".delay").knob({
+        change : function (value) {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            delayIncrements = Math.round(value);
+            circles = [];
+            setupCircles();
+      //      var delay = 0;
+            
+    //        for(var i=0; i<circles.length; i++){
+    //            circles[i].delay = delay;
+    //            console.log(circles[i].delay);
+    //            delay += delayIncrements;
+    //        }  
+         //   drawAndUpdateCircles();
+            
+            
+       //     console.log("change : " + value);
+        //    console.log("Input Acceleration:" +inputAcceleration);
+        },
+        release : function (value) {
+            //console.log(this.$.attr('value'));
+            console.log("release : " + value);
+        },
+        cancel : function () {
+            console.log("cancel : ", this);
+        },
+        /*format : function (value) {
+            return value + '%';
+        },*/
+        draw : function () {
+
+        // "tron" case
+            if(this.$.data('skin') == 'tron') {
+
+                this.cursorExt = 0.3;
+
+                var a = this.arc(this.cv)  // Arc
+                , pa                   // Previous arc
+                , r = 1;
+
+                this.g.lineWidth = this.lineWidth;
+
+                if (this.o.displayPrevious) {
+                    pa = this.arc(this.v);
+                    this.g.beginPath();
+                    this.g.strokeStyle = this.pColor;
+                    this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, pa.s, pa.e, pa.d);
+                    this.g.stroke();
+                }
+
+                this.g.beginPath();
+                this.g.strokeStyle = r ? this.o.fgColor : this.fgColor ;
+                this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, a.s, a.e, a.d);
+                this.g.stroke();
+
+                this.g.lineWidth = 2;
+                this.g.beginPath();
+                this.g.strokeStyle = this.o.fgColor;
+                this.g.arc( this.xy, this.xy, this.radius - this.lineWidth + 1 + this.lineWidth * 2 / 3, 0, 2 * Math.PI, false);
+                this.g.stroke();
+
+                return false;
+            }
+                
+        }
+        
+    });
+    
+});
+
+
+
 
 
 
