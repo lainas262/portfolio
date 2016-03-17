@@ -3,6 +3,10 @@
  *  Exploring the canvas element with a simple animation
  */
 
+//Good reading
+//interesting Article: https://www.nczonline.net/blog/2011/05/03/better-javascript-animations-with-requestanimationframe/
+//article on gameloops: http://gameprogrammingpatterns.com/game-loop.html
+
 //Global Variables
 
 //circles array to hold circle objects
