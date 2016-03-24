@@ -41,9 +41,9 @@ var inputSpeed = 0.003*Math.PI;  //can be set with limits?? or not?
 var inputAcceleration = 0.007*Math.PI; //can be set with limits
 //decelerationPoint is the angle size from the end of a circle to start decelerating the speed when drawing clockwise
 //the value will also be used to calculate when to start decelerating when drawing the circle counter clockwise
-var decelerationPoint =1*Math.PI;//must be   0pi>x>1pi otherwise it will accelerates untill it completes Counter clockwise motion too .. must be half size of drawing arc
+var decelerationPoint =0.5*Math.PI;//must be   0pi>x>1pi otherwise it will accelerates untill it completes Counter clockwise motion too .. must be half size of drawing arc
 //delayIncreaments controls when inner circles are drawn
-var delayIncrements = 0;
+var delayIncrements = 10;
 //Circle objects constructor
 function Circle(radius, startingAngle, endingAngle, positiveIncrement, negativeIncrement, delay, speed, acceleration){
     this.radius = radius;
@@ -128,7 +128,7 @@ function setupCircles(){
         var circle = new Circle(radius, 0*Math.PI + i , 2*Math.PI + i ,0,0,delay,inputSpeed,inputAcceleration);
         circles.push(circle);
         delay+=delayIncrements;
-  //      i+= 0.3*Math.PI;
+        i+= 0.3*Math.PI;
     }
     drawAndUpdateCircles();
 }
