@@ -2,30 +2,31 @@ img {
     max-width: 100%;
     height: auto;
 }
+
 .row{
-    margin-top: 2%;
-    margin-bottom: 2%;
+    margin-top: 1%;
+    margin-bottom: 1%;
 }
 
-.h1{
+h1{
     font-family: 'Open Sans Bold', sans-serif;
     font-weight: bold;
     font-size: 40px;
 }
 
-.h2{
+h2{
     font-family: 'Open Sans Bold', sans-serif;
     font-weight: bold;
     font-size: 34px; 
 }
 
-.h3{
+h3{
     font-family: 'Open Sans Bold', sans-serif;
     font-weight: bold;
     font-size: 18px;
 }
 
-.p{
+p{
     font-family: 'Open Sans Regular', sans-serif;
     font-size: 14px;
 }
@@ -49,7 +50,7 @@ img {
 
 .button{
     display: inline-block;
-    margin-bottom: 0;
+    margin-bottom: 3%;
     font-weight: normal;
     text-align: center;
     vertical-align: middle;
